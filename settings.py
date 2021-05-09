@@ -7,6 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 env.read_envfile()
 
 DEBUG = env("DEBUG", default="no", cast=bool)
+API_KEY = env("API_KEY", default="")
 
 ENABLED_MODULES = [
     "ml",

@@ -1,7 +1,12 @@
 import settings
+import requests
+import pickle
+import json
+import math
 
 from . import ml_api
-from flask_restplus import Resource, abort
+from flask_restplus import Resource
+from flask import abort, request
 
 @ml_api.route("/")
 class MachineLearningModel(Resource):
@@ -15,7 +20,7 @@ class MachineLearningModel(Resource):
             abort(400, "Missing Latitude and Longitude")
 
         response = self.weatherData(lat, lon)
-        filename = 'finalized_model.sav'
+        filename = 'app/modules/ml/finalized_model.sav'
         logreg = pickle.load(open(filename, 'rb'))
 
         #Format for array ['HourlyDewPointTemperature', 'HourlyDryBulbTemperature', 'HourlyPrecipitation','RA',
@@ -31,10 +36,11 @@ class MachineLearningModel(Resource):
 
         sample = [[HourlyDewPointTemperature,HourlyDryBulbTemperature,HourlyPrecipitation,RA,HourlyRelativeHumidity,HourlyWetBulbTemperature,HourlyWindSpeed]]
         q = logreg.predict(sample)
+        print("q", q)
         print (q[0])
 
         resp = {
-            "MLOutput": q[0],
+            "MLOutput": int(q[0]),
             "message": "Successful calculation of prediction"
         }
 
@@ -43,11 +49,12 @@ class MachineLearningModel(Resource):
     def weatherData(self, lat, long):
 
         API_KEY = settings.API_KEY
+        print(API_KEY)
 
         api_url = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon=-{long}&exclude=hourly,daily&appid={API_KEY}&units=imperial"
         response = requests.get(api_url)
 
-        #print(json.dumps(response.json(), indent=2))
+        print(json.dumps(response.json(), indent=2))
         return response.json()
 
     def GetTWetBulbFromRelHum(self, TDryBulb: float, RelHum: float) -> float:

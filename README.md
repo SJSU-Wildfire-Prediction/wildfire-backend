@@ -47,6 +47,8 @@ Create `env.sh` file:
 
 	$ echo "source venv/bin/activate" > env.sh
 
+You will need the `env.sh` file which contains the required environment variables for the development environment. Because this file stores secret API tokens, it is distributed privately to preventing storing secrets on Github. Place this file in the **root** directory of the repo you just cloned. **Please Ask a developer for these environment variables**
+
 Initialize env variables from `env.sh`:
 
 	$ source env.sh
